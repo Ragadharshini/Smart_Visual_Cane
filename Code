@@ -1,0 +1,133 @@
+// Ultrasonic Sensor
+const int trigPin = 7;
+const int echoPin = 6;
+
+//Water Sensor
+const int waterSensorPin = A2;
+
+//Gas Sensor
+const int gasSensorPin = A4;
+
+// Buzzer
+const int buzzer = 13;
+
+//Vibrating Motor
+const int motorPin = 11;
+
+void setup() {
+
+  // Ultrasonic Sensor
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+  // Vibrating Motor
+  pinMode(motorPin, OUTPUT);
+
+  // Buzzer
+  pinMode(buzzer, OUTPUT);
+  
+  Serial.begin(9600);
+}
+
+void loop() {
+
+  // Ultrasonic Sensor
+
+  long duration, UltraDistance;
+
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH);
+  UltraDistance = (duration * 0.0343) / 2;
+
+  if (UltraDistance <= 90 ) {
+    Serial.print("Ultra Distance: ");
+    Serial.print(UltraDistance);
+    Serial.println(" cm");
+
+    analogWrite(motorPin, 255);
+
+    digitalWrite(buzzer, HIGH);
+    playTune(523.25, 1000);
+    delay(1000);
+  }
+
+  else{
+    Serial.print("Ultrasonic Distance: ");
+    Serial.print(UltraDistance);
+    Serial.println(" cm");
+
+    analogWrite(motorPin, 0);
+
+    digitalWrite(buzzer, LOW);
+    delay(1000);
+  }
+  
+  //Water Sensor
+
+  // Read the analog value from the water sensor
+  int waterValue = analogRead(waterSensorPin);
+
+  // Check if the voltage crosses a threshold to detect water
+  if (waterValue > 600) {
+    Serial.println("Water Detected!");
+    Serial.print("Water Value : ");
+    Serial.println(waterValue);
+    
+
+    analogWrite(motorPin, 255);
+   
+    digitalWrite(buzzer, HIGH);
+    playTune(392, 1000);
+    delay(1000);
+  }
+
+  else{
+    
+    analogWrite(motorPin, 0);
+
+    digitalWrite(buzzer, LOW);
+    delay(1000);
+
+  }
+
+//Gas Sensor 
+
+  // Read the analog value from the gas sensor
+  int GasValue = analogRead(gasSensorPin);
+
+  // Check if the sensor value exceeds a threshold to detect gas or smoke
+  if (GasValue > 95) {
+    Serial.println("Gas or Smoke Detected!");
+  
+    Serial.print("Gas Sensor Value: ");
+    Serial.println(GasValue);
+    
+    analogWrite(motorPin, 255);
+
+    digitalWrite(buzzer, HIGH);
+    playTune(294, 1000);
+    delay(1000);
+
+  }
+
+  else{
+    Serial.print("Gas Sensor Value: ");
+    Serial.println(GasValue);
+    analogWrite(motorPin, 0);
+
+    digitalWrite(buzzer, LOW);
+    delay(1000);
+
+  }
+  
+}
+
+// Buzzer Tunes
+void playTune(int frequency, int duration) {
+  tone(buzzer, frequency, duration);
+}
