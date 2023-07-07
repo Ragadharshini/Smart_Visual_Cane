@@ -1,1 +1,1 @@
-# Smart_Visual_Cane
+Smart_Visual_Cane
